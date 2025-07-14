@@ -215,7 +215,23 @@ struct scan_t
         return scan_view{std::forward<decltype(E)>(E), std::forward<decltype(F)>(F), std::forward<decltype(G)>(G)};
     }
 
-#if defined(_LIBCPP_VERSION)
+#if defined(_LIBCPP_VERSION) && (defined(__apple_build_version__) || _LIBCPP_VERSION <= 189999)
+    constexpr auto operator()(auto&& E) const {
+        return std::__range_adaptor_closure_t(std::__bind_back(*this, std::forward<decltype(E)>(E)));
+    }
+    constexpr auto operator()(auto&& E, auto&& F) const {
+        return std::__range_adaptor_closure_t(
+            std::__bind_back(*this, std::forward<decltype(E)>(E), std::forward<decltype(F)>(F)));
+    }
+#elif defined(_LIBCPP_VERSION) && _LIBCPP_VERSION <= 199999
+    constexpr auto operator()(auto&& E) const {
+        return std::ranges::__range_adaptor_closure_t(std::__bind_back(*this, std::forward<decltype(E)>(E)));
+    }
+    constexpr auto operator()(auto&& E, auto&& F) const {
+        return std::ranges::__range_adaptor_closure_t(
+            std::__bind_back(*this, std::forward<decltype(E)>(E), std::forward<decltype(F)>(F)));
+    }
+#elif defined(_LIBCPP_VERSION)
     constexpr auto operator()(auto&& E) const {
         return std::ranges::__pipeable(std::__bind_back(*this, std::forward<decltype(E)>(E)));
     }
