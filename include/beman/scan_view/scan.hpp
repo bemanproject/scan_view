@@ -28,6 +28,14 @@ using movable_box = std::ranges::__detail::__box<T>;
 template <bool Const, typename T>
 using maybe_const = std::ranges::__detail::__maybe_const_t<Const, T>;
 
+#elif defined(_MSC_VER) && defined(_MSVC_STL_UPDATE)
+
+template <typename T>
+using movable_box = std::ranges::_Movable_box<T>;
+
+template <bool Const, typename T>
+using maybe_const = std::_Maybe_const<Const, T>;
+
 #endif
 
 } // namespace detail
