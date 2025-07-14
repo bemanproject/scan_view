@@ -9,6 +9,11 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 **Implements**: `std::views::scan` proposed in [`views::scan` (P3351R2)](https://wg21.link/P3351R2).
 
+**Difference from the paper**:
+- `views::partial_sum` alias is dropped since it is rejected by SG9.
+
+These changes will also be made in the next revision of P3351.
+
 **Status**: [Under development and not yet ready for production use.](https://github.com/bemanproject/beman/blob/main/docs/BEMAN_LIBRARY_MATURITY_MODEL.md#under-development-and-not-yet-ready-for-production-use)
 
 ## Usage
@@ -40,7 +45,6 @@ int main()
 
     return 0;
 }
-
 ```
 
 Full runnable examples can be found in [`examples/`](examples/).

@@ -7,3 +7,7 @@
 
 # ignore vscode settings
 .vscode
+
+# ignore CLion build dir
+cmake-build-*/
+.idea/
