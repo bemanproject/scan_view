@@ -21,9 +21,9 @@ These changes will also be made in the next revision of P3351.
 `views::scan` is a range adaptor that takes a range and a function that takes the current element and the current state as parameters. Basically, `views::scan` is a lazy view version of `std::inclusive_scan`, or `views::transform` with a stateful function.
 
 ```cpp
-#include <vector>
-#include <print>
 #include <functional>
+#include <print>
+#include <vector>
 
 #include <beman/scan_view/scan.hpp>
 
@@ -35,13 +35,13 @@ int main()
     std::vector vec{1, 2, 3, 4, 5, 4, 3, 2, 1};
 
     // [1, 3, 6, 10, 15, 19, 22, 24, 25]
-    std::println("{}", vec | views::scan(std::plus{}));
+    std::println("{}", vec | exe::scan(std::plus{}));
     // [11, 13, 16, 20, 25, 29, 32, 34, 35]
-    std::println("{}", vec | views::scan(std::plus{}, 10));
+    std::println("{}", vec | exe::scan(std::plus{}, 10));
     // [1, 2, 3, 4, 5, 5, 5, 5, 5]
-    std::println("{}", vec | views::scan(ranges::max{}));
+    std::println("{}", vec | exe::scan(std::ranges::max));
     // [3, 3, 3, 4, 5, 5, 5, 5, 5]
-    std::println("{}", vec | views::scan(ranges::max{}, 3));
+    std::println("{}", vec | exe::scan(std::ranges::max, 3));
 
     return 0;
 }

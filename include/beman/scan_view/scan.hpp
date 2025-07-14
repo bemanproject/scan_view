@@ -202,14 +202,44 @@ class scan_view<V, F, T, IsInit>::iterator {
 
 namespace detail {
 
-struct scan_t {
+struct scan_t
+#if defined(__GLIBCXX__)
+    : std::views::__adaptor::_RangeAdaptor<scan_t>
+#endif
+{
     constexpr scan_t() = default;
-    constexpr auto operator()(auto&& E, auto&& F) const {
+    constexpr auto operator()(std::ranges::input_range auto&& E, auto&& F) const {
         return scan_view{std::forward<decltype(E)>(E), std::forward<decltype(F)>(F)};
     }
-    constexpr auto operator()(auto&& E, auto&& F, auto&& G) const {
+    constexpr auto operator()(std::ranges::input_range auto&& E, auto&& F, auto&& G) const {
         return scan_view{std::forward<decltype(E)>(E), std::forward<decltype(F)>(F), std::forward<decltype(G)>(G)};
     }
+
+#if defined(_LIBCPP_VERSION)
+    constexpr auto operator()(auto&& E) const {
+        return std::ranges::__pipeable(std::__bind_back(*this, std::forward<decltype(E)>(E)));
+    }
+    constexpr auto operator()(auto&& E, auto&& F) const {
+        return std::ranges::__pipeable(
+            std::__bind_back(*this, std::forward<decltype(E)>(E), std::forward<decltype(F)>(F)));
+    }
+#elif defined(__GLIBCXX__)
+    constexpr auto operator()(auto&& E) const {
+        return std::views::__adaptor::_Partial<scan_t, std::decay_t<decltype(E)>>{0, std::forward<decltype(E)>(E)};
+    }
+    constexpr auto operator()(auto&& E, auto&& F) const {
+        return std::views::__adaptor::_Partial<scan_t, std::decay_t<decltype(E)>, std::decay_t<decltype(F)>>{
+            0, std::forward<decltype(E)>(E), std::forward<decltype(F)>(F)};
+    }
+#elif defined(_MSC_VER) && defined(_MSVC_STL_UPDATE)
+    constexpr auto operator()(auto&& E) const {
+        return std::ranges::_Range_closure<scan_t, std::decay_t<decltype(E)>>{std::forward<decltype(E)>(E)};
+    }
+    constexpr auto operator()(auto&& E, auto&& F) const {
+        return std::ranges::_Range_closure<scan_t, std::decay_t<decltype(E)>, std::decay_t<decltype(F)>>{
+            std::forward<decltype(E)>(E), std::forward<decltype(F)>(F)};
+    }
+#endif
 };
 
 } // namespace detail

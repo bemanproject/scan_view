@@ -1,11 +1,11 @@
-#include <ranges>
-#include <vector>
 #include <algorithm>
+#include <iostream>
+#include <memory>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
-#include <memory>
-#include <iostream>
+#include <vector>
 
 #if __cpp_lib_print >= 202207L
 #include <print>
