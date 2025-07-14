@@ -239,6 +239,14 @@ struct scan_t
         return std::ranges::__pipeable(
             std::__bind_back(*this, std::forward<decltype(E)>(E), std::forward<decltype(F)>(F)));
     }
+#elif defined(__GLIBCXX__) && !defined(__clang__) && __GNUC__ <= 13
+    constexpr auto operator()(auto&& E) const {
+        return std::views::__adaptor::_Partial<scan_t, std::decay_t<decltype(E)>>{std::forward<decltype(E)>(E)};
+    }
+    constexpr auto operator()(auto&& E, auto&& F) const {
+        return std::views::__adaptor::_Partial<scan_t, std::decay_t<decltype(E)>, std::decay_t<decltype(F)>>{
+            std::forward<decltype(E)>(E), std::forward<decltype(F)>(F)};
+    }
 #elif defined(__GLIBCXX__)
     constexpr auto operator()(auto&& E) const {
         return std::views::__adaptor::_Partial<scan_t, std::decay_t<decltype(E)>>{0, std::forward<decltype(E)>(E)};
