@@ -84,7 +84,7 @@ when configuring the project.
 
 This project officially supports:
 
-* GNU GCC Compiler \[version 11-15\]
+* GNU GCC Compiler \[version 13-15\]
 * LLVM Clang++ Compiler (with libstdc++ or libc++) \[version 17-20\]
 * AppleClang compiler on Mac OS
 * MSVC compiler on Windows
