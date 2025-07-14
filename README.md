@@ -302,14 +302,14 @@ To use `beman.scan_view` in your C++ project,
 include an appropriate `beman.scan_view` header from your source code.
 
 ```c++
-#include <beman/scan_view/identity.hpp>
+#include <beman/scan_view/scan.hpp>
 ```
 
 > [!NOTE]
 >
 > `beman.scan_view` headers are to be included with the `beman/scan_view/` directories prefixed.
 > It is not supported to alter include search paths to spell the include target another way. For instance,
-> `#include <identity.hpp>` is not a supported interface.
+> `#include <scan.hpp>` is not a supported interface.
 
 How you will link your project against `beman.scan_view` will depend on your build system.
 CMake instructions are provided in following sections.
