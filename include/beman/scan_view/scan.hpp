@@ -188,7 +188,7 @@ class scan_view<V, F, T, IsInit>::iterator {
         return x.current_ == y.current_;
     }
     friend constexpr bool operator==(const iterator& x, std::default_sentinel_t) {
-        return x.current_ == std::ranges::end(x.parent_->base_);
+        return x.current_ == std::ranges::end(x.parent_->base());
     }
 };
 
