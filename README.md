@@ -5,73 +5,38 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 -->
 
 <!-- markdownlint-disable-next-line line-length -->
-![Library Status](https://raw.githubusercontent.com/bemanproject/beman/refs/heads/main/images/badges/beman_badge-beman_library_under_development.svg) ![Continuous Integration Tests](https://github.com/Mick235711/scan_view/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/Mick235711/scan_view/actions/workflows/pre-commit.yml/badge.svg) [![Coverage](https://coveralls.io/repos/github/Mick235711/scan_view/badge.svg?branch=main)](https://coveralls.io/github/Mick235711/scan_view?branch=main) ![Standard Target](https://github.com/bemanproject/beman/blob/main/images/badges/cpp29.svg)
+![Library Status](https://raw.githubusercontent.com/bemanproject/beman/refs/heads/main/images/badges/beman_badge-beman_library_under_development.svg) ![Continuous Integration Tests](https://github.com/bemanproject/scan_view/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/bemanproject/scan_view/actions/workflows/pre-commit.yml/badge.svg) [![Coverage](https://coveralls.io/repos/github/bemanproject/scan_view/badge.svg?branch=main)](https://coveralls.io/github/bemanproject/scan_view?branch=main) ![Standard Target](https://github.com/bemanproject/beman/blob/main/images/badges/cpp29.svg)
 
-`beman.scan_view` is a minimal C++ library conforming to [The Beman Standard](https://github.com/bemanproject/beman/blob/main/docs/BEMAN_STANDARD.md).
-This can be used as a template for those intending to write Beman libraries.
-It may also find use as a minimal and modern  C++ project structure.
-
-**Implements**: `std::identity` proposed in [Standard Library Concepts (P3351R2)](https://wg21.link/P3351R2).
+**Implements**: `std::views::scan` proposed in [`views::scan` (P3351R2)](https://wg21.link/P3351R2).
 
 **Status**: [Under development and not yet ready for production use.](https://github.com/bemanproject/beman/blob/main/docs/BEMAN_LIBRARY_MATURITY_MODEL.md#under-development-and-not-yet-ready-for-production-use)
 
 ## Usage
 
-`std::identity` is a function object type whose `operator()` returns its argument unchanged.
-`std::identity` serves as the default projection in constrained algorithms.
-Its direct usage is usually not needed.
-
-### Usage: default projection in constrained algorithms
-
-The following code snippet illustrates how we can achieve a default projection using `beman::scan_view::identity`:
+`views::scan` is a range adaptor that takes a range and a function that takes the current element and the current state as parameters. Basically, `views::scan` is a lazy view version of `std::inclusive_scan`, or `views::transform` with a stateful function.
 
 ```cpp
-#include <beman/scan_view/identity.hpp>
+#include <vector>
+#include <print>
+#include <functional>
+
+#include <beman/scan_view/scan.hpp>
 
 namespace exe = beman::scan_view;
 
-// Class with a pair of values.
-struct Pair
-{
-    int n;
-    std::string s;
-
-    // Output the pair in the form {n, s}.
-    // Used by the range-printer if no custom projection is provided (default: identity projection).
-    friend std::ostream &operator<<(std::ostream &os, const Pair &p)
-    {
-        return os << "Pair" << '{' << p.n << ", " << p.s << '}';
-    }
-};
-
-// A range-printer that can print projected (modified) elements of a range.
-// All the elements of the range are printed in the form {element1, element2, ...}.
-// e.g., pairs with identity: Pair{1, one}, Pair{2, two}, Pair{3, three}
-// e.g., pairs with custom projection: {1:one, 2:two, 3:three}
-template <std::ranges::input_range R,
-          typename Projection>
-void print(const std::string_view rem, R &&range, Projection projection = exe::identity>)
-{
-    std::cout << rem << '{';
-    std::ranges::for_each(
-        range,
-        [O = 0](const auto &o) mutable
-        { std::cout << (O++ ? ", " : "") << o; },
-        projection);
-    std::cout << "}\n";
-};
-
+// Example given in the paper for `views::scan`. (Needs C++23)
 int main()
 {
-    // A vector of pairs to print.
-    const std::vector<Pair> pairs = {
-        {1, "one"},
-        {2, "two"},
-        {3, "three"},
-    };
+    std::vector vec{1, 2, 3, 4, 5, 4, 3, 2, 1};
 
-    // Print the pairs using the default projection.
-    print("\tpairs with beman: ", pairs);
+    // [1, 3, 6, 10, 15, 19, 22, 24, 25]
+    std::println("{}", vec | views::scan(std::plus{}));
+    // [11, 13, 16, 20, 25, 29, 32, 34, 35]
+    std::println("{}", vec | views::scan(std::plus{}, 10));
+    // [1, 2, 3, 4, 5, 5, 5, 5, 5]
+    std::println("{}", vec | views::scan(ranges::max{}));
+    // [3, 3, 3, 4, 5, 5, 5, 5, 5]
+    std::println("{}", vec | views::scan(ranges::max{}, 3));
 
     return 0;
 }
@@ -86,16 +51,13 @@ Full runnable examples can be found in [`examples/`](examples/).
 
 This project requires at least the following to build:
 
-* C++17
+* C++20
 * CMake 3.25
 * (Test Only) GoogleTest
 
 You can disable building tests by setting cmake option
 [`BEMAN_SCAN_VIEW_BUILD_TESTS`](#beman_scan_view_build_tests) to `OFF`
 when configuring the project.
-
-Even when tests are being built and run, some will not be compiled
-unless provided compiler support **C++20** or ranges capabilities enabled.
 
 > [!TIP]
 >
@@ -386,7 +348,7 @@ This will generate such directory structure at `/opt/beman.scan_view`.
 ├── include
 │   └── beman
 │       └── scan_view
-│           └── identity.hpp
+│           └── scan.hpp
 └── lib
     └── libbeman.scan_view.a
 ```

@@ -2,12 +2,12 @@
 
 find_package(GTest REQUIRED)
 
-add_executable(beman.scan_view.tests.identity)
-target_sources(beman.scan_view.tests.identity PRIVATE identity.test.cpp)
+add_executable(beman.scan_view.tests.basic)
+target_sources(beman.scan_view.tests.basic PRIVATE basic.test.cpp)
 target_link_libraries(
-    beman.scan_view.tests.identity
+    beman.scan_view.tests.basic
     PRIVATE beman::scan_view GTest::gtest GTest::gtest_main
 )
 
 include(GoogleTest)
-gtest_discover_tests(beman.scan_view.tests.identity)
+gtest_discover_tests(beman.scan_view.tests.basic)
