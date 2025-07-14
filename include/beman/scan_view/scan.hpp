@@ -102,11 +102,19 @@ class scan_view : public std::ranges::view_interface<scan_view<V, F, T, IsInit>>
         return std::ranges::size(base_);
     }
 
-    /*constexpr auto reserve_hint() requires approximately_sized_range<V>;
-    { return ranges::reserve_hint(base_); }
+#if __cpp_lib_ranges_reserve_hint >= 202502L
+    constexpr auto reserve_hint()
+        requires std::ranges::approximately_sized_range<V>
+    {
+        return std::ranges::reserve_hint(base_);
+    }
 
-    constexpr auto reserve_hint() const requires approximately_sized_range<const V>;
-    { return ranges::reserve_hint(base_); }*/
+    constexpr auto reserve_hint() const
+        requires std::ranges::approximately_sized_range<const V>
+    {
+        return std::ranges::reserve_hint(base_);
+    }
+#endif
 };
 
 template <class R, class F>
@@ -192,13 +200,21 @@ class scan_view<V, F, T, IsInit>::iterator {
     }
 };
 
-inline constexpr auto scan = [](auto&& E, auto&& F) {
-    return scan_view{std::forward<decltype(E)>(E), std::forward<decltype(F)>(F)};
+namespace detail {
+
+struct scan_t {
+    constexpr scan_t() = default;
+    constexpr auto operator()(auto&& E, auto&& F) const {
+        return scan_view{std::forward<decltype(E)>(E), std::forward<decltype(F)>(F)};
+    }
+    constexpr auto operator()(auto&& E, auto&& F, auto&& G) const {
+        return scan_view{std::forward<decltype(E)>(E), std::forward<decltype(F)>(F), std::forward<decltype(G)>(G)};
+    }
 };
-inline constexpr auto prescan = [](auto&& E, auto&& F, auto&& G) {
-    return scan_view{std::forward<decltype(E)>(E), std::forward<decltype(F)>(F), std::forward<decltype(G)>(G)};
-};
-inline constexpr auto partial_sum = [](auto&& E) { return scan_view{std::forward<decltype(E)>(E), std::plus{}}; };
+
+} // namespace detail
+
+inline constexpr detail::scan_t scan{};
 
 } // namespace beman::scan_view
 
