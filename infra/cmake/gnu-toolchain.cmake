@@ -20,8 +20,11 @@ set(CMAKE_CXX_COMPILER g++)
 
 if(BEMAN_BUILDSYS_SANITIZER STREQUAL "MaxSan")
     set(SANITIZER_FLAGS
-        "-fsanitize=address -fsanitize=leak -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize-undefined-trap-on-error"
+        "-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize-undefined-trap-on-error"
     )
+    if(NOT APPLE)
+        set(SANITIZER_FLAGS "${SANITIZER_FLAGS} -fsanitize=leak")
+    endif()
 elseif(BEMAN_BUILDSYS_SANITIZER STREQUAL "TSan")
     set(SANITIZER_FLAGS "-fsanitize=thread")
 endif()
