@@ -26,7 +26,7 @@ struct A {
     int operator*() const { return 0; }
 };
 
-#if __cpp_lib_print >= 202207L
+#if __cpp_lib_print >= 202207L && __cpp_lib_format_ranges >= 202207L
 void print(auto&& rng) { std::print("{}", std::forward<decltype(rng)>(rng)); }
 
 void println(auto&& rng) { std::println("{}", std::forward<decltype(rng)>(rng)); }

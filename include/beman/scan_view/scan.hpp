@@ -3,14 +3,34 @@
 #ifndef BEMAN_SCAN_VIEW_SCAN_HPP
 #define BEMAN_SCAN_VIEW_SCAN_HPP
 
-#include <ranges>
-#include <vector>
-#include <print>
 #include <algorithm>
+#include <functional>
+#include <ranges>
 #include <utility>
-#include <memory>
 
 namespace beman::scan_view {
+
+namespace detail {
+
+#if defined(_LIBCPP_VERSION)
+
+template <typename T>
+using movable_box = std::ranges::__movable_box<T>;
+
+template <bool Const, typename T>
+using maybe_const = std::__maybe_const<Const, T>;
+
+#elif defined(__GLIBCXX__)
+
+template <typename T>
+using movable_box = std::ranges::__detail::__box<T>;
+
+template <bool Const, typename T>
+using maybe_const = std::ranges::__detail::__maybe_const_t<Const, T>;
+
+#endif
+
+} // namespace detail
 
 template <typename V, typename F, typename T, typename U>
 concept scannable_impl = // exposition only
@@ -32,9 +52,9 @@ class scan_view : public std::ranges::view_interface<scan_view<V, F, T, IsInit>>
     template <bool>
     class iterator; // exposition only
 
-    V                             base_ = V(); // exposition only
-    std::ranges::__movable_box<F> fun_;        // exposition only
-    std::ranges::__movable_box<T> init_;       // exposition only
+    V                      base_ = V(); // exposition only
+    detail::movable_box<F> fun_;        // exposition only
+    detail::movable_box<T> init_;       // exposition only
 
   public:
     scan_view()
@@ -91,15 +111,15 @@ template <std::ranges::input_range V, std::move_constructible F, std::move_const
 template <bool Const>
 class scan_view<V, F, T, IsInit>::iterator {
   private:
-    using Parent     = std::__maybe_const<Const, scan_view>; // exposition only
-    using Base       = std::__maybe_const<Const, V>;         // exposition only
+    using Parent     = detail::maybe_const<Const, scan_view>; // exposition only
+    using Base       = detail::maybe_const<Const, V>;         // exposition only
     using ResultType = std::decay_t<
-        std::invoke_result_t<std::__maybe_const<Const, F>&, T, std::ranges::range_reference_t<Base>>>; // exposition
-                                                                                                       // only
+        std::invoke_result_t<detail::maybe_const<Const, F>&, T, std::ranges::range_reference_t<Base>>>; // exposition
+                                                                                                        // only
 
-    std::ranges::iterator_t<Base>          current_ = std::ranges::iterator_t<Base>(); // exposition only
-    Parent*                                parent_  = nullptr;                         // exposition only
-    std::ranges::__movable_box<ResultType> sum_;                                       // exposition only
+    std::ranges::iterator_t<Base>   current_ = std::ranges::iterator_t<Base>(); // exposition only
+    Parent*                         parent_  = nullptr;                         // exposition only
+    detail::movable_box<ResultType> sum_;                                       // exposition only
 
   public:
     using iterator_concept =
@@ -107,8 +127,8 @@ class scan_view<V, F, T, IsInit>::iterator {
     using iterator_category = std::conditional_t<
         std::derived_from<std::forward_iterator_tag,
                           typename std::iterator_traits<std::ranges::iterator_t<Base>>::iterator_category> &&
-            std::is_reference_v<std::invoke_result_t<std::__maybe_const<Const, F>&,
-                                                     std::__maybe_const<Const, T>&,
+            std::is_reference_v<std::invoke_result_t<detail::maybe_const<Const, F>&,
+                                                     detail::maybe_const<Const, T>&,
                                                      std::ranges::range_reference_t<Base>>>,
         std::forward_iterator_tag,
         std::input_iterator_tag>; // present only if Base models forward_range
@@ -123,10 +143,10 @@ class scan_view<V, F, T, IsInit>::iterator {
         if (current_ == std::ranges::end(parent_->base_))
             return;
         if constexpr (IsInit) {
-            sum_ = std::ranges::__movable_box<ResultType>{std::in_place,
-                                                          std::invoke(*parent_->fun_, *parent_->init_, *current_)};
+            sum_ = detail::movable_box<ResultType>{std::in_place,
+                                                   std::invoke(*parent_->fun_, *parent_->init_, *current_)};
         } else {
-            sum_ = std::ranges::__movable_box<ResultType>{std::in_place, *current_};
+            sum_ = detail::movable_box<ResultType>{std::in_place, *current_};
         }
     }
     constexpr iterator(iterator<!Const> i)
@@ -140,8 +160,8 @@ class scan_view<V, F, T, IsInit>::iterator {
 
     constexpr iterator& operator++() {
         if (++current_ != std::ranges::end(parent_->base_)) {
-            sum_ = std::ranges::__movable_box<ResultType>{std::in_place,
-                                                          std::invoke(*parent_->fun_, std::move(*sum_), *current_)};
+            sum_ = detail::movable_box<ResultType>{std::in_place,
+                                                   std::invoke(*parent_->fun_, std::move(*sum_), *current_)};
         }
         return *this;
     }
