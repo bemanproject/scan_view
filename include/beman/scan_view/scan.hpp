@@ -60,6 +60,9 @@ class scan_view : public std::ranges::view_interface<scan_view<V, F, T, IsInit>>
     template <bool>
     class iterator; // exposition only
 
+    template <bool>
+    friend class iterator; // exposition only
+
     V                      base_ = V(); // exposition only
     detail::movable_box<F> fun_;        // exposition only
     detail::movable_box<T> init_;       // exposition only
@@ -190,13 +193,16 @@ class scan_view<V, F, T, IsInit>::iterator {
         return tmp;
     }
 
+    // Workaround for older versions of compilers
+    constexpr auto __get_base_end() const { return std::ranges::end(parent_->base_); }
+
     friend constexpr bool operator==(const iterator& x, const iterator& y)
         requires std::equality_comparable<std::ranges::iterator_t<Base>>
     {
         return x.current_ == y.current_;
     }
     friend constexpr bool operator==(const iterator& x, std::default_sentinel_t) {
-        return x.current_ == std::ranges::end(x.parent_->base());
+        return x.current_ == x.__get_base_end();
     }
 };
 
