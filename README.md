@@ -7,12 +7,11 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 <!-- markdownlint-disable-next-line line-length -->
 ![Library Status](https://raw.githubusercontent.com/bemanproject/beman/refs/heads/main/images/badges/beman_badge-beman_library_under_development.svg) ![Continuous Integration Tests](https://github.com/bemanproject/scan_view/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/bemanproject/scan_view/actions/workflows/pre-commit.yml/badge.svg) [![Coverage](https://coveralls.io/repos/github/bemanproject/scan_view/badge.svg?branch=main)](https://coveralls.io/github/bemanproject/scan_view?branch=main) ![Standard Target](https://github.com/bemanproject/beman/blob/main/images/badges/cpp29.svg)
 
-**Implements**: `std::views::scan` proposed in [`views::scan` (P3351R2)](https://wg21.link/P3351R2).
+**Implements**: `std::views::scan` proposed in [`views::scan` (P3351R3)](https://wg21.link/P3351R3).
 
 **Difference from the paper**:
-- `views::partial_sum` alias is dropped since it is rejected by SG9.
-
-These changes will also be made in the next revision of P3351.
+- Implemented `reserve_hint` are hidden behind a feature-test macro.
+- Conditionally borrowed range changes are only implemented in type traits; no actual code change is done.
 
 **Status**: [Under development and not yet ready for production use.](https://github.com/bemanproject/beman/blob/main/docs/beman_library_maturity_model.md#under-development-and-not-yet-ready-for-production-use)
 

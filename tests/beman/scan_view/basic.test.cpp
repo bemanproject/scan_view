@@ -26,6 +26,11 @@ struct NonConstView : std::ranges::view_base {
     const int* e_;
 };
 
+struct NonTrivialFunctor {
+    int           var_;
+    constexpr int operator()(int a, int b) const { return a + b; }
+};
+
 // Some basic examples of how transform_view might be used in the wild. This is a general
 // collection of sample algorithms and functions that try to mock general usage of
 // this view.
@@ -54,7 +59,7 @@ TEST(ScanView, Properties) {
     static_assert(!std::ranges::common_range<decltype(transformed)>);
     static_assert(std::ranges::sized_range<decltype(transformed)>);
     static_assert(std::ranges::range<const decltype(transformed)>);
-    static_assert(!std::ranges::borrowed_range<decltype(transformed)>);
+    static_assert(std::ranges::borrowed_range<decltype(transformed)>);
     ASSERT_EQ(transformed.size(), 4);
 
     auto transformed2 = exe::scan(vec, std::plus{}, 10);
@@ -64,8 +69,18 @@ TEST(ScanView, Properties) {
     static_assert(!std::ranges::common_range<decltype(transformed2)>);
     static_assert(std::ranges::sized_range<decltype(transformed2)>);
     static_assert(std::ranges::range<const decltype(transformed2)>);
-    static_assert(!std::ranges::borrowed_range<decltype(transformed2)>);
+    static_assert(std::ranges::borrowed_range<decltype(transformed2)>);
     ASSERT_EQ(transformed2.size(), 4);
+
+    auto transformed3 = exe::scan(vec, NonTrivialFunctor{});
+    static_assert(std::is_same_v<std::ranges::range_value_t<decltype(transformed3)>, int>);
+    static_assert(std::is_same_v<std::ranges::range_reference_t<decltype(transformed3)>, const int&>);
+    static_assert(std::ranges::forward_range<decltype(transformed3)>);
+    static_assert(!std::ranges::common_range<decltype(transformed3)>);
+    static_assert(std::ranges::sized_range<decltype(transformed3)>);
+    static_assert(std::ranges::range<const decltype(transformed3)>);
+    static_assert(!std::ranges::borrowed_range<decltype(transformed3)>);
+    ASSERT_EQ(transformed3.size(), 4);
 }
 
 TEST(ScanView, NonConstIterable) {

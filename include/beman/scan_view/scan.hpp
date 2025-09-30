@@ -245,6 +245,10 @@ bind_back(Fn&& f, Args&&... args) noexcept(noexcept(bind_back_t<std::decay_t<Fn>
         std::forward<Fn>(f), std::forward_as_tuple(std::forward<Args>(args)...));
 }
 
+template <class F>
+constexpr bool tidy_func =
+    std::is_empty_v<F> && std::is_trivially_default_constructible_v<F> && std::is_trivially_destructible_v<F>;
+
 } // namespace detail
 
 template <typename V, typename F, typename T, typename U>
@@ -438,5 +442,10 @@ struct scan_t {
 inline constexpr detail::scan_t scan{};
 
 } // namespace beman::scan_view
+
+// Conditionally borrowed range (P3117)
+template <std::ranges::input_range V, std::move_constructible F, std::move_constructible T, bool IsInit = false>
+constexpr bool std::ranges::enable_borrowed_range<beman::scan_view::scan_view<V, F, T, IsInit>> =
+    std::ranges::enable_borrowed_range<V> && beman::scan_view::detail::tidy_func<F>;
 
 #endif // BEMAN_SCAN_VIEW_SCAN_HPP
