@@ -22,7 +22,7 @@ namespace views  = std::views;
 namespace exe    = beman::scan_view;
 
 struct A {
-    operator std::unique_ptr<int>() const { return std::make_unique<int>(); }
+        operator std::unique_ptr<int>() const { return std::make_unique<int>(); }
     int operator*() const { return 0; }
 };
 

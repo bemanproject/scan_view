@@ -236,9 +236,9 @@ template <class Fn, class... Args>
     requires std::is_constructible_v<std::decay_t<Fn>, Fn> && std::is_move_constructible_v<std::decay_t<Fn>> &&
              (std::is_constructible_v<std::decay_t<Args>, Args> && ...) &&
              (std::is_move_constructible_v<std::decay_t<Args>> && ...)
-constexpr auto bind_back(Fn&& f, Args&&... args) noexcept(
-    noexcept(bind_back_t<std::decay_t<Fn>, std::tuple<std::decay_t<Args>...>>(
-        std::forward<Fn>(f), std::forward_as_tuple(std::forward<Args>(args)...))))
+constexpr auto
+bind_back(Fn&& f, Args&&... args) noexcept(noexcept(bind_back_t<std::decay_t<Fn>, std::tuple<std::decay_t<Args>...>>(
+    std::forward<Fn>(f), std::forward_as_tuple(std::forward<Args>(args)...))))
     -> decltype(bind_back_t<std::decay_t<Fn>, std::tuple<std::decay_t<Args>...>>(
         std::forward<Fn>(f), std::forward_as_tuple(std::forward<Args>(args)...))) {
     return bind_back_t<std::decay_t<Fn>, std::tuple<std::decay_t<Args>...>>(

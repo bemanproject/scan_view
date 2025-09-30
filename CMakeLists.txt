@@ -40,8 +40,8 @@ target_sources(
     beman.scan_view
     PUBLIC
         FILE_SET HEADERS
-        BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/include include
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/beman/scan_view/scan.hpp
+            BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/include include
+            FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/beman/scan_view/scan.hpp
 )
 
 set_target_properties(
@@ -50,10 +50,10 @@ set_target_properties(
 )
 
 install(
-    TARGETS beman.scan_view COMPONENT beman.scan_view
+    TARGETS beman.scan_view
+    COMPONENT beman.scan_view
     EXPORT beman.scan_view
-    DESTINATION
-    ${CMAKE_INSTALL_LIBDIR}$<$<CONFIG:Debug>:/debug>
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}$<$<CONFIG:Debug>:/debug>
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}$<$<CONFIG:Debug>:/debug>
     FILE_SET HEADERS DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
