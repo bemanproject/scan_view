@@ -352,18 +352,9 @@ class scan_view<V, F, T, IsInit>::iterator {
     detail::movable_box<ResultType> sum_;                                       // exposition only
 
   public:
-    using iterator_concept =
-        std::conditional_t<std::ranges::forward_range<Base>, std::forward_iterator_tag, std::input_iterator_tag>;
-    using iterator_category = std::conditional_t<
-        std::derived_from<std::forward_iterator_tag,
-                          typename std::iterator_traits<std::ranges::iterator_t<Base>>::iterator_category> &&
-            std::is_reference_v<std::invoke_result_t<detail::maybe_const<Const, F>&,
-                                                     detail::maybe_const<Const, T>&,
-                                                     std::ranges::range_reference_t<Base>>>,
-        std::forward_iterator_tag,
-        std::input_iterator_tag>; // present only if Base models forward_range
-    using value_type      = ResultType;
-    using difference_type = std::ranges::range_difference_t<Base>;
+    using iterator_concept = std::input_iterator_tag;
+    using value_type       = ResultType;
+    using difference_type  = std::ranges::range_difference_t<Base>;
 
     iterator()
         requires std::default_initializable<std::ranges::iterator_t<Base>>
@@ -444,7 +435,7 @@ inline constexpr detail::scan_t scan{};
 } // namespace beman::scan_view
 
 // Conditionally borrowed range (P3117)
-template <std::ranges::input_range V, std::move_constructible F, std::move_constructible T, bool IsInit = false>
+template <std::ranges::input_range V, std::move_constructible F, std::move_constructible T, bool IsInit>
 constexpr bool std::ranges::enable_borrowed_range<beman::scan_view::scan_view<V, F, T, IsInit>> =
     std::ranges::enable_borrowed_range<V> && beman::scan_view::detail::tidy_func<F>;
 

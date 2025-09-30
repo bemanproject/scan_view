@@ -55,7 +55,8 @@ TEST(ScanView, Properties) {
     auto             transformed = exe::scan(vec, std::plus{});
     static_assert(std::is_same_v<std::ranges::range_value_t<decltype(transformed)>, int>);
     static_assert(std::is_same_v<std::ranges::range_reference_t<decltype(transformed)>, const int&>);
-    static_assert(std::ranges::forward_range<decltype(transformed)>);
+    static_assert(std::ranges::input_range<decltype(transformed)> &&
+                  !std::ranges::forward_range<decltype(transformed)>);
     static_assert(!std::ranges::common_range<decltype(transformed)>);
     static_assert(std::ranges::sized_range<decltype(transformed)>);
     static_assert(std::ranges::range<const decltype(transformed)>);
@@ -65,7 +66,8 @@ TEST(ScanView, Properties) {
     auto transformed2 = exe::scan(vec, std::plus{}, 10);
     static_assert(std::is_same_v<std::ranges::range_value_t<decltype(transformed2)>, int>);
     static_assert(std::is_same_v<std::ranges::range_reference_t<decltype(transformed2)>, const int&>);
-    static_assert(std::ranges::forward_range<decltype(transformed2)>);
+    static_assert(std::ranges::input_range<decltype(transformed2)> &&
+                  !std::ranges::forward_range<decltype(transformed2)>);
     static_assert(!std::ranges::common_range<decltype(transformed2)>);
     static_assert(std::ranges::sized_range<decltype(transformed2)>);
     static_assert(std::ranges::range<const decltype(transformed2)>);
@@ -75,7 +77,8 @@ TEST(ScanView, Properties) {
     auto transformed3 = exe::scan(vec, NonTrivialFunctor{});
     static_assert(std::is_same_v<std::ranges::range_value_t<decltype(transformed3)>, int>);
     static_assert(std::is_same_v<std::ranges::range_reference_t<decltype(transformed3)>, const int&>);
-    static_assert(std::ranges::forward_range<decltype(transformed3)>);
+    static_assert(std::ranges::input_range<decltype(transformed3)> &&
+                  !std::ranges::forward_range<decltype(transformed3)>);
     static_assert(!std::ranges::common_range<decltype(transformed3)>);
     static_assert(std::ranges::sized_range<decltype(transformed3)>);
     static_assert(std::ranges::range<const decltype(transformed3)>);
