@@ -81,19 +81,15 @@ when configuring the project.
 
 ### Supported Platforms
 
-This project officially supports:
-
-* GNU GCC Compiler \[version 11-15\]
-* LLVM Clang++ Compiler (with libstdc++ or libc++) \[version 17-20\]
-* AppleClang compiler on Mac OS
-* MSVC compiler on Windows
-
-> [!NOTE]
->
-> Versions outside of this range would likely work as well,
-> especially if you're using a version above the given range
-> (e.g. HEAD/ nightly).
-> These development environments are verified using our CI configuration.
+| Compiler   | Version | C++ Standards | Standard Library  |
+|------------|---------|---------------|-------------------|
+| GCC        | 15-13   | C++26-C++20   | libstdc++         |
+| GCC        | 12-11   | C++23, C++20  | libstdc++         |
+| Clang      | 20-19   | C++26-C++20   | libstdc++, libc++ |
+| Clang      | 18-17   | C++26-C++20   | libc++            |
+| Clang      | 18-17   | C++20         | libstdc++         |
+| AppleClang | latest  | C++26-C++20   | libc++            |
+| MSVC       | latest  | C++23         | MSVC STL          |
 
 ## Development
 
