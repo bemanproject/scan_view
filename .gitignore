@@ -13,3 +13,9 @@
 
 # ignore JetBrains settings
 .idea/
+
+# ignore vim swap files
+.swp
+
+# ignore merge/patch backup files
+.orig

@@ -104,6 +104,17 @@ For details on building beman.scan_view without using a CMake preset, refer to t
 
 ### Installation
 
+#### Vcpkg
+
+The preferred way to install scan_view is via vcpkg. To do so, after installing vcpkg
+itself, you need to add support for the Beman project's [vcpkg
+registry](https://github.com/bemanproject/vcpkg-registry) by configuring a
+`vcpkg-configuration.json` file (which scan_view [provides](vcpkg-configuration.json)).
+
+Then, simply run `vcpkg install beman-scan-view`.
+
+#### Manual
+
 To install beman.scan_view globally after building with the `gcc-release` preset, you can
 run:
 

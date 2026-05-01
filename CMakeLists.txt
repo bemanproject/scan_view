@@ -3,8 +3,7 @@
 cmake_minimum_required(VERSION 3.30...4.3)
 
 project(
-    beman.scan_view # CMake Project Name, which is also the name of the top-level
-    # targets (e.g., library, executable, etc.).
+    beman.scan_view
     DESCRIPTION
         "A range adaptor that is a lazy view version of std::inclusive_scan"
     LANGUAGES CXX
