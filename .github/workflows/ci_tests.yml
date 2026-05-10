@@ -136,7 +136,7 @@ jobs:
         }
 
   vcpkg-ci:
-    uses: bemanproject/infra-workflows/.github/workflows/reusable-beman-vcpkg-ci.yml@1.6.0
+    uses: bemanproject/infra-workflows/.github/workflows/reusable-beman-vcpkg-ci.yml@1.7.1
     with:
       port_name: beman-scan-view
       feature_combinations: |
