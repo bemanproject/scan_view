@@ -3,7 +3,6 @@
 #if BEMAN_SCAN_VIEW_USE_MODULES()
 
 import std;
-import beman.scan_view;
 
 #else
 
@@ -15,9 +14,9 @@ import beman.scan_view;
         #include <print>
     #endif
 
-    #include <beman/scan_view/scan.hpp>
-
 #endif
+
+#include <beman/scan_view/scan.hpp>
 
 namespace exe = beman::scan_view;
 

@@ -7,7 +7,6 @@
     #include <gtest/gtest.h>
 
 import std;
-import beman.scan_view;
 
 #else
 
@@ -18,9 +17,9 @@ import beman.scan_view;
 
     #include <gtest/gtest.h>
 
-    #include <beman/scan_view/scan.hpp>
-
 #endif
+
+#include <beman/scan_view/scan.hpp>
 
 namespace exe = beman::scan_view;
 

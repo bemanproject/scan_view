@@ -24,9 +24,6 @@ import beman.scan_view;
 
 #endif // !BEMAN_SCAN_VIEW_USE_MODULES()
 
-#endif // #if BEMAN_SCAN_VIEW_USE_MODULES() &&
-       // !defined(BEMAN_SCAN_VIEW_INCLUDED_FROM_INTERFACE_UNIT)
-
 namespace beman::scan_view {
 
 namespace detail {
@@ -480,5 +477,8 @@ template <std::ranges::input_range         V,
           beman::scan_view::scan_view_kind K>
 constexpr bool std::ranges::enable_borrowed_range<beman::scan_view::scan_view<V, F, T, K>> =
     std::ranges::enable_borrowed_range<V> && beman::scan_view::detail::tidy_func<F>;
+
+#endif // #if BEMAN_SCAN_VIEW_USE_MODULES() &&
+       // !defined(BEMAN_SCAN_VIEW_INCLUDED_FROM_INTERFACE_UNIT)
 
 #endif // BEMAN_SCAN_VIEW_SCAN_HPP
