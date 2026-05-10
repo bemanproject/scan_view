@@ -11,10 +11,10 @@ import beman.scan_view;
 
 #else
 
-#include <algorithm>
-#include <array>
-#include <functional>
-#include <vector>
+    #include <algorithm>
+    #include <array>
+    #include <functional>
+    #include <vector>
 
     #include <gtest/gtest.h>
 
