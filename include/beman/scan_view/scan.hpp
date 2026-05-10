@@ -3,6 +3,17 @@
 #ifndef BEMAN_SCAN_VIEW_SCAN_HPP
 #define BEMAN_SCAN_VIEW_SCAN_HPP
 
+#include <beman/scan_view/config.hpp>
+
+#if BEMAN_SCAN_VIEW_USE_MODULES() && \
+    !defined(BEMAN_SCAN_VIEW_INCLUDED_FROM_INTERFACE_UNIT)
+
+import beman.scan_view;
+
+#else
+
+#if !BEMAN_SCAN_VIEW_USE_MODULES()
+
 #include <algorithm>
 #include <concepts>
 #include <functional>
@@ -10,6 +21,11 @@
 #include <ranges>
 #include <type_traits>
 #include <utility>
+
+#endif // !BEMAN_SCAN_VIEW_USE_MODULES()
+
+#endif // #if BEMAN_SCAN_VIEW_USE_MODULES() &&
+       // !defined(BEMAN_SCAN_VIEW_INCLUDED_FROM_INTERFACE_UNIT)
 
 namespace beman::scan_view {
 

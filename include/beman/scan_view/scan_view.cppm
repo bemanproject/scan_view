@@ -14,6 +14,6 @@ export module beman.scan_view;
 export {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winclude-angled-in-module-purview"
-#include <beman/scan_view/scan_view.hpp>
+#include <beman/scan_view/scan.hpp>
 #pragma clang diagnostic pop
 }
