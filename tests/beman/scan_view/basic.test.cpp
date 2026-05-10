@@ -4,7 +4,7 @@
 
 #if BEMAN_SCAN_VIEW_USE_MODULES()
 
-#include <gtest/gtest.h>
+    #include <gtest/gtest.h>
 
 import std;
 import beman.scan_view;
@@ -18,7 +18,7 @@ import beman.scan_view;
 
 #include <gtest/gtest.h>
 
-#include <beman/scan_view/scan.hpp>
+    #include <beman/scan_view/scan.hpp>
 
 #endif
 

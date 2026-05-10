@@ -7,15 +7,15 @@ import beman.scan_view;
 
 #else
 
-#include <functional>
-#include <iostream>
-#include <vector>
+    #include <functional>
+    #include <iostream>
+    #include <vector>
 
 #if __cpp_lib_print >= 202207L
     #include <print>
 #endif
 
-#include <beman/scan_view/scan.hpp>
+    #include <beman/scan_view/scan.hpp>
 
 #endif
 
