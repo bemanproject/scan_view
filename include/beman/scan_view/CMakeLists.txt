@@ -8,7 +8,6 @@ if(BEMAN_SCAN_VIEW_USE_MODULES)
             FILE_SET HEADERS
                 FILES
                     config.hpp
-                    scan_view.hpp
                     scan.hpp
                     "${PROJECT_BINARY_DIR}/include/beman/scan_view/config_generated.hpp"
     )
@@ -19,7 +18,6 @@ else()
             FILE_SET HEADERS
                 FILES
                     config.hpp
-                    scan_view.hpp
                     scan.hpp
                     "${PROJECT_BINARY_DIR}/include/beman/scan_view/config_generated.hpp"
     )
