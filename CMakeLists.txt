@@ -2,6 +2,8 @@
 
 cmake_minimum_required(VERSION 3.30...4.3)
 
+include(infra/cmake/enable-experimental-import-std.cmake)
+
 project(
     beman.scan_view
     DESCRIPTION
