@@ -16,7 +16,7 @@ import beman.scan_view;
 #include <functional>
 #include <vector>
 
-#include <gtest/gtest.h>
+    #include <gtest/gtest.h>
 
     #include <beman/scan_view/scan.hpp>
 

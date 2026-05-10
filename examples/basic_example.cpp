@@ -11,9 +11,9 @@ import beman.scan_view;
     #include <iostream>
     #include <vector>
 
-#if __cpp_lib_print >= 202207L
-    #include <print>
-#endif
+    #if __cpp_lib_print >= 202207L
+        #include <print>
+    #endif
 
     #include <beman/scan_view/scan.hpp>
 
