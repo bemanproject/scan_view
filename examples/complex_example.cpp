@@ -1,3 +1,12 @@
+#include <beman/scan_view/config.hpp>
+
+#if BEMAN_SCAN_VIEW_USE_MODULES()
+
+import std;
+import beman.scan_view;
+
+#else
+
 #include <algorithm>
 #include <iostream>
 #include <memory>
@@ -12,6 +21,8 @@
 #endif
 
 #include <beman/scan_view/scan.hpp>
+
+#endif
 
 namespace std {
 string to_string(string_view str) { return string{str}; }

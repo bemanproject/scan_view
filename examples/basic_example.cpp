@@ -1,3 +1,12 @@
+#include <beman/scan_view/config.hpp>
+
+#if BEMAN_SCAN_VIEW_USE_MODULES()
+
+import std;
+import beman.scan_view;
+
+#else
+
 #include <functional>
 #include <iostream>
 #include <vector>
@@ -7,6 +16,8 @@
 #endif
 
 #include <beman/scan_view/scan.hpp>
+
+#endif
 
 namespace exe = beman::scan_view;
 
