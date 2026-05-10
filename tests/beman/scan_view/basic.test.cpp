@@ -6,6 +6,7 @@
 
 #include <gtest/gtest.h>
 
+import std;
 import beman.scan_view;
 
 #else
