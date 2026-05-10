@@ -1,5 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
+#include <beman/scan_view/config.hpp>
+
+#if BEMAN_SCAN_VIEW_USE_MODULES()
+
+#include <gtest/gtest.h>
+
+import beman.scan_view;
+
+#else
+
 #include <algorithm>
 #include <array>
 #include <functional>
@@ -8,6 +18,8 @@
 #include <gtest/gtest.h>
 
 #include <beman/scan_view/scan.hpp>
+
+#endif
 
 namespace exe = beman::scan_view;
 
