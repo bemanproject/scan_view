@@ -44,7 +44,7 @@ jobs:
                       "tests": [
                         "Debug.Default", "Release.Default", "Release.TSan",
                         "Release.MaxSan", "Debug.Werror", "Debug.Dynamic",
-                        "Debug.Coverage"
+                        "Debug.Coverage", "Debug.-DBEMAN_EXEMPLAR_USE_MODULES=On"
                       ]
                     }
                   ]
@@ -78,7 +78,8 @@ jobs:
                     { "stdlibs": ["libstdc++", "libc++"],
                       "tests": [
                         "Debug.Default", "Release.Default", "Release.TSan",
-                        "Release.MaxSan", "Debug.Werror", "Debug.Dynamic"
+                        "Release.MaxSan", "Debug.Werror", "Debug.Dynamic",
+                        "Debug.-DBEMAN_EXEMPLAR_USE_MODULES=On"
                       ]
                     }
                   ]
@@ -138,6 +139,11 @@ jobs:
     uses: bemanproject/infra-workflows/.github/workflows/reusable-beman-vcpkg-ci.yml@1.6.0
     with:
       port_name: beman-scan-view
+      feature_combinations: |
+        [
+          {"features": {}},
+          {"features": {"modules": true}}
+        ]
 
   create-issue-when-fault:
     needs: [preset-test, build-and-test]
