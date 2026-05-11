@@ -5,14 +5,13 @@
 
 #include <beman/scan_view/config.hpp>
 
-#if BEMAN_SCAN_VIEW_USE_MODULES() && \
-    !defined(BEMAN_SCAN_VIEW_INCLUDED_FROM_INTERFACE_UNIT)
+#if BEMAN_SCAN_VIEW_USE_MODULES() && !defined(BEMAN_SCAN_VIEW_INCLUDED_FROM_INTERFACE_UNIT)
 
 import beman.scan_view;
 
 #else
 
-#if !BEMAN_SCAN_VIEW_USE_MODULES()
+    #if !BEMAN_SCAN_VIEW_USE_MODULES()
 
 #include <algorithm>
 #include <concepts>
@@ -22,7 +21,7 @@ import beman.scan_view;
 #include <type_traits>
 #include <utility>
 
-#endif // !BEMAN_SCAN_VIEW_USE_MODULES()
+    #endif // !BEMAN_SCAN_VIEW_USE_MODULES()
 
 namespace beman::scan_view {
 
@@ -475,7 +474,7 @@ template <std::ranges::input_range         V,
           std::move_constructible          F,
           std::move_constructible          T,
           beman::scan_view::scan_view_kind K>
-constexpr bool std::ranges::enable_borrowed_range<beman::scan_view::scan_view<V, F, T, K>> =
+constexpr bool std::ranges::enable_borrowed_range<beman::scan_view::scan_view<V, F, T, K> > =
     std::ranges::enable_borrowed_range<V> && beman::scan_view::detail::tidy_func<F>;
 
 #endif // #if BEMAN_SCAN_VIEW_USE_MODULES() &&
