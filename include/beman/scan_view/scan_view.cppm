@@ -1,14 +1,10 @@
-module;
-
-#include <algorithm>
-#include <concepts>
-#include <functional>
-#include <optional>
-#include <ranges>
-#include <type_traits>
-#include <utility>
-
 export module beman.scan_view;
+
+import std;
+
+using size_t = std::size_t;
+
+#define __cpp_lib_ranges 202207L
 
 #define BEMAN_SCAN_VIEW_INCLUDED_FROM_INTERFACE_UNIT
 export {
