@@ -2,9 +2,9 @@
 
 #include <beman/scan_view/config.hpp>
 
-#if BEMAN_SCAN_VIEW_USE_MODULES()
+#include <gtest/gtest.h>
 
-    #include <gtest/gtest.h>
+#if BEMAN_SCAN_VIEW_USE_MODULES()
 
 import std;
 
@@ -14,8 +14,6 @@ import std;
     #include <array>
     #include <functional>
     #include <vector>
-
-    #include <gtest/gtest.h>
 
 #endif
 
