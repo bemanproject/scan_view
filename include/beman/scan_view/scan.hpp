@@ -100,7 +100,7 @@ using maybe_const = std::conditional_t<Const, const Tp, Tp>;
 template <class Op, class Indices, class... BoundArgs>
 struct perfect_forward_impl;
 
-template <class Op, size_t... Idx, class... BoundArgs>
+template <class Op, std::size_t... Idx, class... BoundArgs>
 struct perfect_forward_impl<Op, std::index_sequence<Idx...>, BoundArgs...> {
   private:
     std::tuple<BoundArgs...> bound_args_;
@@ -223,10 +223,10 @@ struct range_adaptor_closure {
     }
 };
 
-template <size_t NBound, class = std::make_index_sequence<NBound> >
+template <std::size_t NBound, class = std::make_index_sequence<NBound> >
 struct bind_back_op;
 
-template <size_t NBound, size_t... Ip>
+template <std::size_t NBound, std::size_t... Ip>
 struct bind_back_op<NBound, std::index_sequence<Ip...> > {
     template <class Fn, class BoundArgs, class... Args>
     constexpr auto operator()(Fn&& f, BoundArgs&& bound_args, Args&&... args) const noexcept(noexcept(std::invoke(
