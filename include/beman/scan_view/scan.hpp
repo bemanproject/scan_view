@@ -3,13 +3,25 @@
 #ifndef BEMAN_SCAN_VIEW_SCAN_HPP
 #define BEMAN_SCAN_VIEW_SCAN_HPP
 
-#include <algorithm>
-#include <concepts>
-#include <functional>
-#include <optional>
-#include <ranges>
-#include <type_traits>
-#include <utility>
+#include <beman/scan_view/config.hpp>
+
+#if BEMAN_SCAN_VIEW_USE_MODULES() && !defined(BEMAN_SCAN_VIEW_INCLUDED_FROM_INTERFACE_UNIT)
+
+import beman.scan_view;
+
+#else
+
+    #if !BEMAN_SCAN_VIEW_USE_MODULES()
+
+        #include <algorithm>
+        #include <concepts>
+        #include <functional>
+        #include <optional>
+        #include <ranges>
+        #include <type_traits>
+        #include <utility>
+
+    #endif // !BEMAN_SCAN_VIEW_USE_MODULES()
 
 namespace beman::scan_view {
 
@@ -19,11 +31,11 @@ namespace detail {
 // just move-constructible; we preserve the old behavior in pre-C++23 modes.
 template <class Tp>
 concept movable_box_object =
-#if __cpp_lib_ranges >= 202207L
+    #if __cpp_lib_ranges >= 202207L
     std::move_constructible<Tp>
-#else
+    #else
     std::copy_constructible<Tp>
-#endif
+    #endif
     && std::is_object_v<Tp>;
 
 // Primary template - uses std::optional and introduces an empty state in case assignment fails.
@@ -46,9 +58,9 @@ class movable_box {
     movable_box(movable_box&&)      = default;
 
     constexpr movable_box& operator=(const movable_box& other) noexcept(std::is_nothrow_copy_constructible_v<Tp>)
-#if __cpp_lib_ranges >= 202207L
+    #if __cpp_lib_ranges >= 202207L
         requires std::copy_constructible<Tp>
-#endif
+    #endif
     {
         if (this != std::addressof(other)) {
             if (other.has_value())
@@ -88,13 +100,13 @@ using maybe_const = std::conditional_t<Const, const Tp, Tp>;
 template <class Op, class Indices, class... BoundArgs>
 struct perfect_forward_impl;
 
-template <class Op, size_t... Idx, class... BoundArgs>
+template <class Op, std::size_t... Idx, class... BoundArgs>
 struct perfect_forward_impl<Op, std::index_sequence<Idx...>, BoundArgs...> {
   private:
     std::tuple<BoundArgs...> bound_args_;
 
   public:
-    template <class... Args, class = std::enable_if_t<std::is_constructible_v<std::tuple<BoundArgs...>, Args&&...>>>
+    template <class... Args, class = std::enable_if_t<std::is_constructible_v<std::tuple<BoundArgs...>, Args&&...> > >
     explicit constexpr perfect_forward_impl(Args&&... bound_args) : bound_args_(std::forward<Args>(bound_args)...) {}
 
     perfect_forward_impl(const perfect_forward_impl&) = default;
@@ -103,44 +115,44 @@ struct perfect_forward_impl<Op, std::index_sequence<Idx...>, BoundArgs...> {
     perfect_forward_impl& operator=(const perfect_forward_impl&) = default;
     perfect_forward_impl& operator=(perfect_forward_impl&&)      = default;
 
-    template <class... Args, class = std::enable_if_t<std::is_invocable_v<Op, BoundArgs&..., Args...>>>
+    template <class... Args, class = std::enable_if_t<std::is_invocable_v<Op, BoundArgs&..., Args...> > >
     constexpr auto
     operator()(Args&&... args) & noexcept(noexcept(Op()(std::get<Idx>(bound_args_)..., std::forward<Args>(args)...)))
         -> decltype(Op()(std::get<Idx>(bound_args_)..., std::forward<Args>(args)...)) {
         return Op()(std::get<Idx>(bound_args_)..., std::forward<Args>(args)...);
     }
 
-    template <class... Args, class = std::enable_if_t<!std::is_invocable_v<Op, BoundArgs&..., Args...>>>
+    template <class... Args, class = std::enable_if_t<!std::is_invocable_v<Op, BoundArgs&..., Args...> > >
     auto operator()(Args&&...) & = delete;
 
-    template <class... Args, class = std::enable_if_t<std::is_invocable_v<Op, const BoundArgs&..., Args...>>>
+    template <class... Args, class = std::enable_if_t<std::is_invocable_v<Op, const BoundArgs&..., Args...> > >
     constexpr auto operator()(Args&&... args) const& noexcept(noexcept(Op()(std::get<Idx>(bound_args_)...,
                                                                             std::forward<Args>(args)...)))
         -> decltype(Op()(std::get<Idx>(bound_args_)..., std::forward<Args>(args)...)) {
         return Op()(std::get<Idx>(bound_args_)..., std::forward<Args>(args)...);
     }
 
-    template <class... Args, class = std::enable_if_t<!std::is_invocable_v<Op, const BoundArgs&..., Args...>>>
+    template <class... Args, class = std::enable_if_t<!std::is_invocable_v<Op, const BoundArgs&..., Args...> > >
     auto operator()(Args&&...) const& = delete;
 
-    template <class... Args, class = std::enable_if_t<std::is_invocable_v<Op, BoundArgs..., Args...>>>
+    template <class... Args, class = std::enable_if_t<std::is_invocable_v<Op, BoundArgs..., Args...> > >
     constexpr auto operator()(Args&&... args) && noexcept(noexcept(Op()(std::get<Idx>(std::move(bound_args_))...,
                                                                         std::forward<Args>(args)...)))
         -> decltype(Op()(std::get<Idx>(std::move(bound_args_))..., std::forward<Args>(args)...)) {
         return Op()(std::get<Idx>(std::move(bound_args_))..., std::forward<Args>(args)...);
     }
 
-    template <class... Args, class = std::enable_if_t<!std::is_invocable_v<Op, BoundArgs..., Args...>>>
+    template <class... Args, class = std::enable_if_t<!std::is_invocable_v<Op, BoundArgs..., Args...> > >
     auto operator()(Args&&...) && = delete;
 
-    template <class... Args, class = std::enable_if_t<std::is_invocable_v<Op, const BoundArgs..., Args...>>>
+    template <class... Args, class = std::enable_if_t<std::is_invocable_v<Op, const BoundArgs..., Args...> > >
     constexpr auto operator()(Args&&... args) const&& noexcept(noexcept(Op()(std::get<Idx>(std::move(bound_args_))...,
                                                                              std::forward<Args>(args)...)))
         -> decltype(Op()(std::get<Idx>(std::move(bound_args_))..., std::forward<Args>(args)...)) {
         return Op()(std::get<Idx>(std::move(bound_args_))..., std::forward<Args>(args)...);
     }
 
-    template <class... Args, class = std::enable_if_t<!std::is_invocable_v<Op, const BoundArgs..., Args...>>>
+    template <class... Args, class = std::enable_if_t<!std::is_invocable_v<Op, const BoundArgs..., Args...> > >
     auto operator()(Args&&...) const&& = delete;
 };
 
@@ -166,9 +178,9 @@ struct compose_t : perfect_forward<compose_op, Fn1, Fn2> {
 
 template <class Fn1, class Fn2>
 constexpr auto compose(Fn1&& f1, Fn2&& f2) noexcept(
-    noexcept(compose_t<std::decay_t<Fn1>, std::decay_t<Fn2>>(std::forward<Fn1>(f1), std::forward<Fn2>(f2))))
-    -> decltype(compose_t<std::decay_t<Fn1>, std::decay_t<Fn2>>(std::forward<Fn1>(f1), std::forward<Fn2>(f2))) {
-    return compose_t<std::decay_t<Fn1>, std::decay_t<Fn2>>(std::forward<Fn1>(f1), std::forward<Fn2>(f2));
+    noexcept(compose_t<std::decay_t<Fn1>, std::decay_t<Fn2> >(std::forward<Fn1>(f1), std::forward<Fn2>(f2))))
+    -> decltype(compose_t<std::decay_t<Fn1>, std::decay_t<Fn2> >(std::forward<Fn1>(f1), std::forward<Fn2>(f2))) {
+    return compose_t<std::decay_t<Fn1>, std::decay_t<Fn2> >(std::forward<Fn1>(f1), std::forward<Fn2>(f2));
 }
 
 // CRTP base that one can derive from in order to be considered a range adaptor closure
@@ -182,25 +194,25 @@ struct range_adaptor_closure;
 // Type that wraps an arbitrary function object and makes it into a range adaptor closure,
 // i.e. something that can be called via the `x | f` notation.
 template <class Fn>
-struct range_adaptor_closure_t : Fn, range_adaptor_closure<range_adaptor_closure_t<Fn>> {
+struct range_adaptor_closure_t : Fn, range_adaptor_closure<range_adaptor_closure_t<Fn> > {
     constexpr explicit range_adaptor_closure_t(Fn&& f) : Fn(std::move(f)) {}
 };
 
 template <class Tp>
 concept RangeAdaptorClosure =
-    std::derived_from<std::remove_cvref_t<Tp>, range_adaptor_closure<std::remove_cvref_t<Tp>>>;
+    std::derived_from<std::remove_cvref_t<Tp>, range_adaptor_closure<std::remove_cvref_t<Tp> > >;
 
 template <class Tp>
 struct range_adaptor_closure {
     template <std::ranges::viewable_range View, RangeAdaptorClosure Closure>
-        requires std::same_as<Tp, std::remove_cvref_t<Closure>> && std::invocable<Closure, View>
+        requires std::same_as<Tp, std::remove_cvref_t<Closure> > && std::invocable<Closure, View>
     [[nodiscard]] friend constexpr decltype(auto)
     operator|(View&& view, Closure&& closure) noexcept(std::is_nothrow_invocable_v<Closure, View>) {
         return std::invoke(std::forward<Closure>(closure), std::forward<View>(view));
     }
 
     template <RangeAdaptorClosure Closure, RangeAdaptorClosure OtherClosure>
-        requires std::same_as<Tp, std::remove_cvref_t<Closure>> &&
+        requires std::same_as<Tp, std::remove_cvref_t<Closure> > &&
                  std::constructible_from<std::decay_t<Closure>, Closure> &&
                  std::constructible_from<std::decay_t<OtherClosure>, OtherClosure>
     [[nodiscard]] friend constexpr auto
@@ -211,11 +223,11 @@ struct range_adaptor_closure {
     }
 };
 
-template <size_t NBound, class = std::make_index_sequence<NBound>>
+template <std::size_t NBound, class = std::make_index_sequence<NBound> >
 struct bind_back_op;
 
-template <size_t NBound, size_t... Ip>
-struct bind_back_op<NBound, std::index_sequence<Ip...>> {
+template <std::size_t NBound, std::size_t... Ip>
+struct bind_back_op<NBound, std::index_sequence<Ip...> > {
     template <class Fn, class BoundArgs, class... Args>
     constexpr auto operator()(Fn&& f, BoundArgs&& bound_args, Args&&... args) const noexcept(noexcept(std::invoke(
         std::forward<Fn>(f), std::forward<Args>(args)..., std::get<Ip>(std::forward<BoundArgs>(bound_args))...)))
@@ -228,20 +240,20 @@ struct bind_back_op<NBound, std::index_sequence<Ip...>> {
 };
 
 template <class Fn, class BoundArgs>
-struct bind_back_t : perfect_forward<bind_back_op<std::tuple_size_v<BoundArgs>>, Fn, BoundArgs> {
-    using perfect_forward<bind_back_op<std::tuple_size_v<BoundArgs>>, Fn, BoundArgs>::perfect_forward;
+struct bind_back_t : perfect_forward<bind_back_op<std::tuple_size_v<BoundArgs> >, Fn, BoundArgs> {
+    using perfect_forward<bind_back_op<std::tuple_size_v<BoundArgs> >, Fn, BoundArgs>::perfect_forward;
 };
 
 template <class Fn, class... Args>
-    requires std::is_constructible_v<std::decay_t<Fn>, Fn> && std::is_move_constructible_v<std::decay_t<Fn>> &&
+    requires std::is_constructible_v<std::decay_t<Fn>, Fn> && std::is_move_constructible_v<std::decay_t<Fn> > &&
              (std::is_constructible_v<std::decay_t<Args>, Args> && ...) &&
-             (std::is_move_constructible_v<std::decay_t<Args>> && ...)
+             (std::is_move_constructible_v<std::decay_t<Args> > && ...)
 constexpr auto
-bind_back(Fn&& f, Args&&... args) noexcept(noexcept(bind_back_t<std::decay_t<Fn>, std::tuple<std::decay_t<Args>...>>(
+bind_back(Fn&& f, Args&&... args) noexcept(noexcept(bind_back_t<std::decay_t<Fn>, std::tuple<std::decay_t<Args>...> >(
     std::forward<Fn>(f), std::forward_as_tuple(std::forward<Args>(args)...))))
-    -> decltype(bind_back_t<std::decay_t<Fn>, std::tuple<std::decay_t<Args>...>>(
+    -> decltype(bind_back_t<std::decay_t<Fn>, std::tuple<std::decay_t<Args>...> >(
         std::forward<Fn>(f), std::forward_as_tuple(std::forward<Args>(args)...))) {
-    return bind_back_t<std::decay_t<Fn>, std::tuple<std::decay_t<Args>...>>(
+    return bind_back_t<std::decay_t<Fn>, std::tuple<std::decay_t<Args>...> >(
         std::forward<Fn>(f), std::forward_as_tuple(std::forward<Args>(args)...));
 }
 
@@ -255,22 +267,22 @@ enum class scan_view_kind : bool { unseeded, seeded };
 
 template <typename V, typename F, typename T, typename U>
 concept scannable_impl = // exposition only
-    std::movable<U> && std::convertible_to<T, U> && std::invocable<F&, U, std::ranges::range_reference_t<V>> &&
-    std::assignable_from<U&, std::invoke_result_t<F&, U, std::ranges::range_reference_t<V>>>;
+    std::movable<U> && std::convertible_to<T, U> && std::invocable<F&, U, std::ranges::range_reference_t<V> > &&
+    std::assignable_from<U&, std::invoke_result_t<F&, U, std::ranges::range_reference_t<V> > >;
 
 template <typename V, typename F, typename T>
 concept scannable = // exposition only
-    std::invocable<F&, T, std::ranges::range_reference_t<V>> &&
-    std::convertible_to<std::invoke_result_t<F&, T, std::ranges::range_reference_t<V>>,
-                        std::decay_t<std::invoke_result_t<F&, T, std::ranges::range_reference_t<V>>>> &&
-    scannable_impl<V, F, T, std::decay_t<std::invoke_result_t<F&, T, std::ranges::range_reference_t<V>>>>;
+    std::invocable<F&, T, std::ranges::range_reference_t<V> > &&
+    std::convertible_to<std::invoke_result_t<F&, T, std::ranges::range_reference_t<V> >,
+                        std::decay_t<std::invoke_result_t<F&, T, std::ranges::range_reference_t<V> > > > &&
+    scannable_impl<V, F, T, std::decay_t<std::invoke_result_t<F&, T, std::ranges::range_reference_t<V> > > >;
 
 template <std::ranges::input_range V,
           std::move_constructible  F,
           std::move_constructible  T,
           scan_view_kind           K = scan_view_kind::unseeded>
     requires std::ranges::view<V> && std::is_object_v<F> && std::is_object_v<T> && scannable<V, F, T>
-class scan_view : public std::ranges::view_interface<scan_view<V, F, T, K>> {
+class scan_view : public std::ranges::view_interface<scan_view<V, F, T, K> > {
   private:
     // [range.scan.iterator], class template scan_view::iterator
     template <bool>
@@ -321,7 +333,7 @@ class scan_view : public std::ranges::view_interface<scan_view<V, F, T, K>> {
         return std::ranges::size(base_);
     }
 
-#if __cpp_lib_ranges_reserve_hint >= 202502L
+    #if __cpp_lib_ranges_reserve_hint >= 202502L
     constexpr auto reserve_hint()
         requires std::ranges::approximately_sized_range<V>
     {
@@ -333,11 +345,11 @@ class scan_view : public std::ranges::view_interface<scan_view<V, F, T, K>> {
     {
         return std::ranges::reserve_hint(base_);
     }
-#endif
+    #endif
 };
 
 template <class R, class F>
-scan_view(R&&, F) -> scan_view<std::views::all_t<R>, F, std::ranges::range_value_t<R>>;
+scan_view(R&&, F) -> scan_view<std::views::all_t<R>, F, std::ranges::range_value_t<R> >;
 template <class R, class F, class T>
 scan_view(R&&, F, T) -> scan_view<std::views::all_t<R>, F, T, scan_view_kind::seeded>;
 
@@ -350,7 +362,7 @@ class scan_view<V, F, T, K>::iterator {
     using Base       = detail::maybe_const<Const, V>;         // exposition only
     using Func       = detail::maybe_const<Const, F>;         // exposition only
     using ResultType = std::decay_t<                          // exposition only
-        std::invoke_result_t<Func&, T, std::ranges::range_reference_t<Base>>>;
+        std::invoke_result_t<Func&, T, std::ranges::range_reference_t<Base> > >;
 
     struct Holder {                                                           // exposition only
         std::ranges::sentinel_t<Base> end_ = std::ranges::sentinel_t<Base>(); // exposition only
@@ -394,7 +406,7 @@ class scan_view<V, F, T, K>::iterator {
     using difference_type  = std::ranges::range_difference_t<Base>;
 
     iterator()
-        requires std::default_initializable<std::ranges::iterator_t<Base>>
+        requires std::default_initializable<std::ranges::iterator_t<Base> >
     = default;
     constexpr iterator(Parent& parent, std::ranges::iterator_t<Base> current)
         : current_{std::move(current)}, parent_{init(parent)} {
@@ -407,7 +419,7 @@ class scan_view<V, F, T, K>::iterator {
         }
     }
     constexpr iterator(iterator<!Const> i)
-        requires Const && std::convertible_to<std::ranges::iterator_t<V>, std::ranges::iterator_t<Base>>
+        requires Const && std::convertible_to<std::ranges::iterator_t<V>, std::ranges::iterator_t<Base> >
         : current_{std::move(i.current_)}, parent_{std::move(i.parent_)}, sum_{std::move(i.sum_)} {}
 
     constexpr const std::ranges::iterator_t<Base>& base() const& noexcept { return current_; }
@@ -424,7 +436,7 @@ class scan_view<V, F, T, K>::iterator {
     constexpr void operator++(int) { ++*this; }
 
     friend constexpr bool operator==(const iterator& x, const iterator& y)
-        requires std::equality_comparable<std::ranges::iterator_t<Base>>
+        requires std::equality_comparable<std::ranges::iterator_t<Base> >
     {
         return x.current_ == y.current_;
     }
@@ -462,7 +474,10 @@ template <std::ranges::input_range         V,
           std::move_constructible          F,
           std::move_constructible          T,
           beman::scan_view::scan_view_kind K>
-constexpr bool std::ranges::enable_borrowed_range<beman::scan_view::scan_view<V, F, T, K>> =
+constexpr bool std::ranges::enable_borrowed_range<beman::scan_view::scan_view<V, F, T, K> > =
     std::ranges::enable_borrowed_range<V> && beman::scan_view::detail::tidy_func<F>;
+
+#endif // #if BEMAN_SCAN_VIEW_USE_MODULES() &&
+       // !defined(BEMAN_SCAN_VIEW_INCLUDED_FROM_INTERFACE_UNIT)
 
 #endif // BEMAN_SCAN_VIEW_SCAN_HPP

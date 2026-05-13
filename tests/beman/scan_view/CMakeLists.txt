@@ -9,5 +9,12 @@ target_link_libraries(
     PRIVATE beman::scan_view GTest::gtest GTest::gtest_main
 )
 
+if(BEMAN_SCAN_VIEW_USE_MODULES)
+    set_target_properties(
+        beman.scan_view.tests.basic
+        PROPERTIES CXX_MODULE_STD ON
+    )
+endif()
+
 include(GoogleTest)
 gtest_discover_tests(beman.scan_view.tests.basic DISCOVERY_TIMEOUT 60)

@@ -1,14 +1,24 @@
-#include <algorithm>
-#include <iostream>
-#include <memory>
-#include <ranges>
-#include <string>
-#include <string_view>
-#include <utility>
-#include <vector>
+#include <beman/scan_view/config.hpp>
 
-#if __cpp_lib_print >= 202207L
-    #include <print>
+#if BEMAN_SCAN_VIEW_USE_MODULES()
+
+import std;
+
+#else
+
+    #include <algorithm>
+    #include <iostream>
+    #include <memory>
+    #include <ranges>
+    #include <string>
+    #include <string_view>
+    #include <utility>
+    #include <vector>
+
+    #if __cpp_lib_print >= 202207L
+        #include <print>
+    #endif
+
 #endif
 
 #include <beman/scan_view/scan.hpp>
