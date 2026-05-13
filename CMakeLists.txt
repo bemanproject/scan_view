@@ -9,7 +9,7 @@ project(
     DESCRIPTION
         "A range adaptor that is a lazy view version of std::inclusive_scan"
     LANGUAGES CXX
-    VERSION 0.1.0
+    VERSION 0.2.0
 )
 
 # [CMAKE.SKIP_TESTS]
