@@ -9,6 +9,7 @@ if(BEMAN_SCAN_VIEW_USE_MODULES)
                 FILES
                     config.hpp
                     scan.hpp
+                    detail/expo_only.hpp
                     "${PROJECT_BINARY_DIR}/include/beman/scan_view/config_generated.hpp"
     )
 else()
@@ -19,6 +20,7 @@ else()
                 FILES
                     config.hpp
                     scan.hpp
+                    detail/expo_only.hpp
                     "${PROJECT_BINARY_DIR}/include/beman/scan_view/config_generated.hpp"
     )
 endif()
