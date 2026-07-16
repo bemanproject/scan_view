@@ -10,7 +10,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 [![Lint Check (pre-commit)](https://github.com/bemanproject/scan_view/actions/workflows/pre-commit-check.yml/badge.svg)](https://github.com/bemanproject/scan_view/actions/workflows/pre-commit-check.yml)
 [![Coverage](https://coveralls.io/repos/github/bemanproject/scan_view/badge.svg?branch=main)](https://coveralls.io/github/bemanproject/scan_view?branch=main)
 ![Standard Target](https://github.com/bemanproject/beman/blob/main/images/badges/cpp29.svg)
-[![Compiler Explorer Example](https://img.shields.io/badge/Try%20it%20on%20Compiler%20Explorer-grey?logo=compilerexplorer&logoColor=67c52a)](https://godbolt.org/z/qMvEhWKf9)
+[![Compiler Explorer Example](https://img.shields.io/badge/Try%20it%20on%20Compiler%20Explorer-grey?logo=compilerexplorer&logoColor=67c52a)](https://godbolt.org/z/sjYcq61oz)
 <!-- markdownlint-restore -->
 
 **Implements**: `std::views::scan` proposed in [`views::scan` (P3351R4)](https://wg21.link/P3351R4).
