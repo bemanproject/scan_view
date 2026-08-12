@@ -163,23 +163,30 @@ TEST(ScanView, MoveOnly) {
     vec4.push_back(std::make_unique<int>(5));
     vec4.push_back(std::make_unique<int>(2));
     vec4.push_back(std::make_unique<int>(10));
-    auto out     = exe::scan(vec4, [](const auto& a, const auto& b) { return a + *b; }, 3);
-    int  check[] = {8, 10, 20};
-    ASSERT_TRUE(std::ranges::equal(out, check));
+    auto out = exe::scan(
+        vec4, [](const auto& a, const auto& b) { return std::make_unique<int>(*a + *b); }, std::make_unique<int>(3));
+    int check[] = {8, 10, 20};
+    ASSERT_TRUE(std::ranges::equal(out, check, std::ranges::equal_to{}, [](const auto& a) { return *a; }));
+    auto out2 = exe::scan(vec4, [](const auto& a, const auto& b) { return a + *b; }, 0);
+    ASSERT_EQ(*out2.begin(), 5);
+    auto it = out2.begin();
+    ASSERT_EQ(*it, 5);
+    ASSERT_EQ(*++it, 7);
+    ASSERT_EQ(*++it, 17);
 
-    decltype(exe::scan(vec4, MoveOnlyFunctor{}, 3).begin()) it;
+    decltype(exe::scan(vec4, MoveOnlyFunctor{}, 3).begin()) it2;
     {
-        auto out2 = exe::scan(vec4, MoveOnlyFunctor{}, 3);
-        static_assert(std::ranges::borrowed_range<decltype(out2)>);
-        ASSERT_TRUE(std::ranges::equal(out2, check));
-        it = out2.begin();
+        auto out3 = exe::scan(vec4, MoveOnlyFunctor{}, 3);
+        static_assert(std::ranges::borrowed_range<decltype(out3)>);
+        ASSERT_TRUE(std::ranges::equal(out3, check));
+        it2 = out3.begin();
     }
-    ASSERT_EQ(*it, 8);
-    ++it;
-    ASSERT_EQ(*it, 10);
+    ASSERT_EQ(*it2, 8);
+    ++it2;
+    ASSERT_EQ(*it2, 10);
 
-    auto out3 = exe::scan(vec4, MoveOnlyNonTrivialFunctor{}, 3);
-    static_assert(!std::ranges::borrowed_range<decltype(out3)>);
-    ASSERT_TRUE(std::ranges::equal(out3, check));
+    auto out4 = exe::scan(vec4, MoveOnlyNonTrivialFunctor{}, 3);
+    static_assert(!std::ranges::borrowed_range<decltype(out4)>);
+    ASSERT_TRUE(std::ranges::equal(out4, check));
 }
 #endif

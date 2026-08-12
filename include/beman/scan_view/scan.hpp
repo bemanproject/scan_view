@@ -28,11 +28,14 @@ namespace beman::scan_view {
 
 enum class scan_view_kind : bool { unseeded, seeded };
 
-template <typename V, typename F, typename T>
+template <typename V, typename F, typename T, scan_view_kind K>
 concept scannable = // exposition only
     std::move_constructible<F> && std::invocable<F&, T, std::ranges::range_reference_t<V> > &&
     std::convertible_to<std::invoke_result_t<F&, T, std::ranges::range_reference_t<V> >,
                         std::decay_t<std::invoke_result_t<F&, T, std::ranges::range_reference_t<V> > > > &&
+    (K == scan_view_kind::seeded ||
+     std::constructible_from<std::decay_t<std::invoke_result_t<F&, T, std::ranges::range_reference_t<V> > >,
+                             std::ranges::range_reference_t<V> >) &&
     detail::indirectly_binary_left_foldable_impl<
         F,
         T,
@@ -43,7 +46,7 @@ template <std::ranges::input_range V,
           std::move_constructible  F,
           std::move_constructible  T,
           scan_view_kind           K = scan_view_kind::unseeded>
-    requires std::ranges::view<V> && std::is_object_v<F> && std::is_object_v<T> && scannable<V, F, T>
+    requires std::ranges::view<V> && std::is_object_v<F> && std::is_object_v<T> && scannable<V, F, T, K>
 class scan_view : public std::ranges::view_interface<scan_view<V, F, T, K> > {
   private:
     // [range.scan.iterator], class template scan_view::iterator
@@ -77,7 +80,7 @@ class scan_view : public std::ranges::view_interface<scan_view<V, F, T, K> > {
 
     constexpr iterator<false> begin() { return iterator<false>{*this, std::ranges::begin(base_)}; }
     constexpr iterator<true>  begin() const
-        requires std::ranges::range<const V> && scannable<const V, const F, T>
+        requires std::ranges::range<const V> && scannable<const V, const F, T, K>
     {
         return iterator<true>{*this, std::ranges::begin(base_)};
     }
@@ -116,7 +119,7 @@ template <class R, class F, class T>
 scan_view(R&&, F, T) -> scan_view<std::views::all_t<R>, F, T, scan_view_kind::seeded>;
 
 template <std::ranges::input_range V, std::move_constructible F, std::move_constructible T, scan_view_kind K>
-    requires std::ranges::view<V> && std::is_object_v<F> && std::is_object_v<T> && scannable<V, F, T>
+    requires std::ranges::view<V> && std::is_object_v<F> && std::is_object_v<T> && scannable<V, F, T, K>
 template <bool Const>
 class scan_view<V, F, T, K>::iterator {
   private:
@@ -129,7 +132,6 @@ class scan_view<V, F, T, K>::iterator {
     struct Holder {                                                           // exposition only
         std::ranges::sentinel_t<Base> end_ = std::ranges::sentinel_t<Base>(); // exposition only
         detail::movable_box<F>        fun_;                                   // exposition only
-        detail::movable_box<T>        init_;                                  // exposition only
     };
     using HolderType = std::conditional_t<detail::tidy_func<F>, Holder, Parent*>; // exposition only
 
@@ -149,15 +151,9 @@ class scan_view<V, F, T, K>::iterator {
         else
             return *parent_->fun_;
     }
-    constexpr T& get_init() { // exposition only
-        if constexpr (detail::tidy_func<F>)
-            return *parent_.init_;
-        else
-            return *parent_->init_;
-    }
     static constexpr HolderType init(Parent& parent) { // exposition only
         if constexpr (detail::tidy_func<F>)
-            return {std::ranges::end(parent.base_), detail::movable_box<F>{std::in_place}, parent.init_};
+            return {std::ranges::end(parent.base_), detail::movable_box<F>{std::in_place}};
         else
             return std::addressof(parent);
     }
@@ -175,7 +171,7 @@ class scan_view<V, F, T, K>::iterator {
         if (current_ == get_end())
             return;
         if constexpr (K == scan_view_kind::seeded) {
-            sum_ = detail::movable_box<ResultType>{std::in_place, std::invoke(get_fun(), get_init(), *current_)};
+            sum_ = detail::movable_box<ResultType>{std::in_place, std::invoke(get_fun(), *parent.init_, *current_)};
         } else {
             sum_ = detail::movable_box<ResultType>{std::in_place, *current_};
         }
