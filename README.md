@@ -13,7 +13,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 [![Compiler Explorer Example](https://img.shields.io/badge/Try%20it%20on%20Compiler%20Explorer-grey?logo=compilerexplorer&logoColor=67c52a)](https://godbolt.org/z/sjYcq61oz)
 <!-- markdownlint-restore -->
 
-**Implements**: `std::views::scan` proposed in [`views::scan` (P3351R4)](https://wg21.link/P3351R4).
+**Implements**: `std::views::scan` proposed in [`views::scan` (P3351R5)](https://wg21.link/P3351R5).
 
 **Difference from the paper**:
 

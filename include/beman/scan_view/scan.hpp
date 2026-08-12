@@ -28,17 +28,16 @@ namespace beman::scan_view {
 
 enum class scan_view_kind : bool { unseeded, seeded };
 
-template <typename V, typename F, typename T, typename U>
-concept scannable_impl = // exposition only
-    std::movable<U> && std::convertible_to<T, U> && std::invocable<F&, U, std::ranges::range_reference_t<V> > &&
-    std::assignable_from<U&, std::invoke_result_t<F&, U, std::ranges::range_reference_t<V> > >;
-
 template <typename V, typename F, typename T>
 concept scannable = // exposition only
-    std::invocable<F&, T, std::ranges::range_reference_t<V> > &&
+    std::move_constructible<F> && std::invocable<F&, T, std::ranges::range_reference_t<V> > &&
     std::convertible_to<std::invoke_result_t<F&, T, std::ranges::range_reference_t<V> >,
                         std::decay_t<std::invoke_result_t<F&, T, std::ranges::range_reference_t<V> > > > &&
-    scannable_impl<V, F, T, std::decay_t<std::invoke_result_t<F&, T, std::ranges::range_reference_t<V> > > >;
+    detail::indirectly_binary_left_foldable_impl<
+        F,
+        T,
+        std::ranges::iterator_t<V>,
+        std::decay_t<std::invoke_result_t<F&, T, std::ranges::range_reference_t<V> > > >;
 
 template <std::ranges::input_range V,
           std::move_constructible  F,

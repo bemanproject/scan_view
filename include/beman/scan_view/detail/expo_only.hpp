@@ -252,6 +252,12 @@ template <class F>
 constexpr bool tidy_func =
     std::is_empty_v<F> && std::is_trivially_default_constructible_v<F> && std::is_trivially_destructible_v<F>;
 
+template <typename F, typename T, typename I, typename U>
+concept indirectly_binary_left_foldable_impl = // exposition only
+    std::movable<T> && std::movable<U> && std::convertible_to<T, U> &&
+    std::invocable<F&, U, std::iter_reference_t<I> > &&
+    std::assignable_from<U&, std::invoke_result_t<F&, U, std::iter_reference_t<I> > >;
+
 } // namespace beman::scan_view::detail
 
 #endif // BEMAN_SCAN_VIEW_DETAIL_EXPO_ONLY_HPP
