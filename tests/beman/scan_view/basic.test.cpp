@@ -2,6 +2,8 @@
 
 #include <beman/scan_view/config.hpp>
 
+#include <memory>
+
 #include <gtest/gtest.h>
 
 #if BEMAN_SCAN_VIEW_USE_MODULES()
